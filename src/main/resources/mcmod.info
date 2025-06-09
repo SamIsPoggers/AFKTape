@@ -1,13 +1,13 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Give a description of your mod here, it will show in the modlist menu",
+  "modid": "afktape",
+  "name": "AFKTape",
+  "description": "A simple mod that allows you to hold down keys while AFK.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://samispoggers.pages.dev/",
   "updateUrl": "",
-  "authorList": ["Put your name here!"],
+  "authorList": ["SamIsPoggers"],
   "credits": "",
   "logoFile": "",
   "screenshots": [],
