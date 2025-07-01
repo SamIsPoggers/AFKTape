@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.sam.afktape.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "afktape.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "KeyBindingAccessor",
+    "KeyboardMixin",
+    "MinecraftClientMixin",
+    "MouseMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
