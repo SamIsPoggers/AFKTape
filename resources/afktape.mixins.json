@@ -1,0 +1,22 @@
+{
+	"required": true,
+	"package": "io.github.samispoggers.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	},
+	"client": [
+		"ClientPlayNetworkHandlerMixin",
+		"InGameHudMixin",
+		"KeyBindingAccessor",
+		"KeyboardMixin",
+		"LocalPlayerMixin",
+		"MinecraftClientMixin",
+		"MouseMixin"
+	]
+}
