@@ -15,7 +15,6 @@
 		"InGameHudMixin",
 		"KeyBindingAccessor",
 		"KeyboardMixin",
-		"LocalPlayerMixin",
 		"MinecraftClientMixin",
 		"MouseMixin"
 	]
