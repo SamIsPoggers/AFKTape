@@ -3,7 +3,7 @@ package io.github.samispoggers.config;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
-import net.fabricmc.loader.api.FabricLoader;
+import io.github.samispoggers.platform.PlatformHooks;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import dev.isxander.yacl3.api.*;
@@ -13,9 +13,7 @@ import java.nio.file.Path;
 
 public class AFKTapeConfig {
 
-    private static final Path CONFIG_PATH = FabricLoader.getInstance()
-            .getConfigDir()
-            .resolve("afktape.json");
+    private static final Path CONFIG_PATH = PlatformHooks.getConfigDir().resolve("afktape.json");
 
     public static final ConfigClassHandler<AFKTapeConfig> HANDLER = ConfigClassHandler.createBuilder(AFKTapeConfig.class)
             .serializer(config -> GsonConfigSerializerBuilder.create(config)

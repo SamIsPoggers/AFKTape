@@ -16,10 +16,10 @@
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-			"io.github.samispoggers.AFKTape"
+			"io.github.samispoggers.fabric.AFKTapeFabric"
 		],
 		"client": [
-			"io.github.samispoggers.client.AFKTapeClient"
+			"io.github.samispoggers.fabric.AFKTapeFabricClient"
 		],
 		"modmenu": [
 			"io.github.samispoggers.compat.ModMenuIntegration"
@@ -30,9 +30,9 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.19.2",
-		"minecraft": "${minecraft_version_range}",
+		"minecraft": "${minecraft_version_range_fabric}",
 		"java": ">=25",
 		"fabric-api": "*",
-		"yet_another_config_lib_v3": ">=3.9.2+26.1-fabric"
+		"yet_another_config_lib_v3": ">=${yacl_fabric_version}"
 	}
 }

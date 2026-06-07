@@ -1,0 +1,99 @@
+plugins {
+	id 'net.neoforged.moddev' version "${moddevgradle_version}"
+	id 'maven-publish'
+}
+
+base {
+	archivesName = "${rootProject.archives_base_name}-neoforge"
+}
+
+sourceSets {
+	main {
+		java.srcDirs = [
+			'../common/src/main/java',
+			'src/main/java'
+		]
+		resources.srcDirs = [
+			'../common/src/main/resources',
+			'src/main/resources'
+		]
+	}
+}
+
+neoForge {
+	version = project.neoforge_version
+	validateAccessTransformers = true
+
+	runs {
+		client {
+			client()
+			gameDirectory = rootProject.file('run/neoforge')
+		}
+	}
+
+	mods {
+		afktape {
+			sourceSet sourceSets.main
+		}
+	}
+}
+
+dependencies {
+	implementation "dev.isxander:yet-another-config-lib:${project.yacl_neoforge_version}"
+}
+
+processResources {
+	inputs.property 'version', project.version
+	inputs.property 'minecraft_version_range_neoforge', project.minecraft_version_range_neoforge
+	inputs.property 'neoforge_version_range', project.neoforge_version_range
+	inputs.property 'yacl_neoforge_version_range', project.yacl_neoforge_version_range
+
+	filesMatching('META-INF/neoforge.mods.toml') {
+		expand(
+				'version': project.version,
+				'minecraft_version_range_neoforge': project.minecraft_version_range_neoforge,
+				'neoforge_version_range': project.neoforge_version_range,
+				'yacl_neoforge_version_range': project.yacl_neoforge_version_range
+		)
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release = 25
+}
+
+java {
+	withSourcesJar()
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
+}
+
+publishing {
+	publications {
+		create('mavenJava', MavenPublication) {
+			from components.java
+		}
+	}
+}
+
+def runClientVersions = [
+		'26_1'  : '26.1.0.12-beta',
+		'26_1_1': '26.1.1.2-beta',
+		'26_1_2': '26.1.2.65-beta'
+]
+
+runClientVersions.each { suffix, neoVersion ->
+	tasks.register("runClient${suffix}", Exec) {
+		group = 'neoforge'
+		description = "Runs the Minecraft ${suffix.replace('_', '.')} NeoForge client."
+
+		def wrapper = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
+				? rootProject.file('gradlew.bat')
+				: rootProject.file('gradlew')
+
+		commandLine wrapper,
+				':neoforge:runClient',
+				"-Pneoforge_version=${neoVersion}"
+	}
+}

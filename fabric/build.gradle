@@ -1,0 +1,93 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'maven-publish'
+}
+
+base {
+	archivesName = "${rootProject.archives_base_name}-fabric"
+}
+
+sourceSets {
+	main {
+		java.srcDirs = [
+			'../common/src/main/java',
+			'src/main/java'
+		]
+		resources.srcDirs = [
+			'../common/src/main/resources',
+			'src/main/resources'
+		]
+	}
+}
+
+loom {
+	mods {
+		afktape {
+			sourceSet sourceSets.main
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	implementation "dev.isxander:yet-another-config-lib:${project.yacl_fabric_version}"
+	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+}
+
+processResources {
+	inputs.property 'version', project.version
+	inputs.property 'minecraft_version_range_fabric', project.minecraft_version_range_fabric
+	inputs.property 'yacl_fabric_version', project.yacl_fabric_version
+
+	filesMatching('fabric.mod.json') {
+		expand(
+				'version': project.version,
+				'minecraft_version_range_fabric': project.minecraft_version_range_fabric,
+				'yacl_fabric_version': project.yacl_fabric_version
+		)
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release = 25
+}
+
+java {
+	withSourcesJar()
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
+}
+
+publishing {
+	publications {
+		create('mavenJava', MavenPublication) {
+			from components.java
+		}
+	}
+}
+
+def runClientVersions = [
+		'26_1'  : ['minecraft': '26.1', 'fabricApi': '0.145.1+26.1'],
+		'26_1_1': ['minecraft': '26.1.1', 'fabricApi': '0.145.4+26.1.1'],
+		'26_1_2': ['minecraft': '26.1.2', 'fabricApi': '0.150.0+26.1.2']
+]
+
+runClientVersions.each { suffix, coordinates ->
+	tasks.register("runClient${suffix}", Exec) {
+		group = 'fabric'
+		description = "Runs the Minecraft ${coordinates.minecraft} Fabric client with matching Fabric API."
+
+		def wrapper = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
+				? rootProject.file('gradlew.bat')
+				: rootProject.file('gradlew')
+
+		commandLine wrapper,
+				':fabric:runClient',
+				"-Pminecraft_version=${coordinates.minecraft}",
+				"-Pfabric_api_version=${coordinates.fabricApi}"
+	}
+}
