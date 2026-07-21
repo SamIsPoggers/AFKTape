@@ -3,6 +3,11 @@ package io.github.samispoggers.mixin;
 import io.github.samispoggers.client.KeybindHandler;
 import io.github.samispoggers.config.AFKTapeConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.DisconnectedScreen;
+import net.minecraft.client.gui.screens.GenericMessageScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundDamageEventPacket;
@@ -48,9 +53,31 @@ public class ClientPlayNetworkHandlerMixin {
     }
 
     private void disconnectIfAfk(boolean enabled, String message) {
-        if (enabled && KeybindHandler.INSTANCE.isRunningIgnorePause()) {
-            KeybindHandler.INSTANCE.disable();
-            Minecraft.getInstance().disconnectFromWorld(Component.literal(message));
+        if (!enabled || !KeybindHandler.INSTANCE.isRunningIgnorePause()) {
+            return;
         }
+
+        KeybindHandler.INSTANCE.disable();
+
+        Minecraft client = Minecraft.getInstance();
+
+        client.execute(() -> {
+            Screen parent = client.isLocalServer()
+                    ? new TitleScreen()
+                    : new JoinMultiplayerScreen(new TitleScreen());
+
+            ((MinecraftAccessor) client).afktape$disconnect(
+                    new DisconnectedScreen(
+                            parent,
+                            Component.translatable("disconnect.lost"),
+                            Component.literal(message),
+                            client.isLocalServer()
+                                    ? Component.translatable("gui.toTitle")
+                                    : Component.translatable("gui.toMenu")
+                    ),
+                    false,
+                    true
+            );
+        });
     }
 }

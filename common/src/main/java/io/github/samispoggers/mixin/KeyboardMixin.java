@@ -24,16 +24,16 @@ public class KeyboardMixin {
     private long lastEscapePressTime = 0;
 
     @Inject(at = @At("HEAD"), method = "keyPress", cancellable = true)
-    private void modifyKeyPress(long window, int action, KeyEvent keyEvent, CallbackInfo ci) {
+    private void modifyKeyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
         if (action != ACTION_PRESS) {
             return;
         }
 
-        int key = keyEvent.key();
+        int key = event.key();
 
         if (KeybindHandler.INSTANCE.isRunning()) {
             for (KeyMapping keyMapping : KeybindHandler.INSTANCE.enabledKeys) {
-                if (keyMapping.matches(keyEvent)) {
+                if (keyMapping.matches(event)) {
                     ci.cancel();
                     return;
                 }
@@ -49,7 +49,7 @@ public class KeyboardMixin {
     private void handleEscapePress(CallbackInfo ci) {
         KeybindHandler handler = KeybindHandler.INSTANCE;
         Minecraft mc = Minecraft.getInstance();
-        boolean hasScreen = mc.screen != null;
+        boolean hasScreen = mc.gui.screen() != null;
 
         if (handler.isRunning() && !hasScreen) {
             handler.disable();

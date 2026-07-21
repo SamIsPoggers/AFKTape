@@ -78,9 +78,7 @@ publishing {
 }
 
 def runClientVersions = [
-		'26_1'  : '26.1.0.12-beta',
-		'26_1_1': '26.1.1.2-beta',
-		'26_1_2': '26.1.2.65-beta'
+		'26_2': '26.2.0.25-beta'
 ]
 
 runClientVersions.each { suffix, neoVersion ->

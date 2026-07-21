@@ -6,10 +6,10 @@ license="CC0-1.0"
 modId="afktape"
 version="${version}"
 displayName="AFKTape"
-displayURL="https://github.com/FabricMC/fabric-example-mod"
+displayURL="https://github.com/SamIsPoggers/AFKTape"
 logoFile="assets/afktape/icon.png"
-authors="Me!"
-description='''This is an example description! Tell everyone what your mod is about!'''
+authors="SamIsPoggers"
+description='''A simple mod that allows you to hold down keys while AFK.'''
 
 [[mixins]]
 config="afktape.mixins.json"

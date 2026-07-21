@@ -3,17 +3,23 @@ package io.github.samispoggers.client;
 import io.github.samispoggers.config.AFKTapeConfig;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
 import static net.minecraft.ChatFormatting.*;
 
 public class KeybindHandler {
     public static final KeybindHandler INSTANCE = new KeybindHandler();
+
     private final SoundManager soundManager = new SoundManager();
+
     private boolean running = false;
     private boolean paused = false;
-    public boolean wasPaused = false;
-    public Set<KeyMapping> enabledKeys = new HashSet<>();
+
+    public final Set<KeyMapping> enabledKeys = new HashSet<>();
 
     public boolean isRunning() {
         return running && !paused;
@@ -29,58 +35,75 @@ public class KeybindHandler {
 
     public void enable(Set<KeyMapping> keys) {
         running = true;
+        enabledKeys.clear();
         enabledKeys.addAll(keys);
+
         if (AFKTapeConfig.get().muteWhenAfk) {
             soundManager.mute();
         }
+
         Minecraft.getInstance().mouseHandler.releaseMouse();
     }
 
     public String[] getMessage() {
+        if (Minecraft.getInstance().player == null) {
+            return new String[0];
+        }
+
         String[] msg = new String[4];
-        if (Minecraft.getInstance().player != null) {
-            StringBuilder str = new StringBuilder();
-            str.append(WHITE).append("Taped down ");
-            for (int i = 0; i < enabledKeys.size(); i++) {
-                KeyMapping keyMapping = enabledKeys.toArray(new KeyMapping[0])[i];
-                String keyName = keyMapping.getTranslatedKeyMessage().getString().toUpperCase();
-                int size = enabledKeys.size();
-                if (size == 1 || i == size - 2) {
-                    str.append(AQUA).append(keyName);
-                } else if (i == size - 1) {
-                    str.append(WHITE).append(" and ").append(AQUA).append(keyName);
+
+        List<String> keyNames = enabledKeys.stream()
+                .map(key -> key.getTranslatedKeyMessage().getString().toUpperCase())
+                .sorted()
+                .toList();
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(WHITE).append("Taped down ");
+
+        for (int i = 0; i < keyNames.size(); i++) {
+            if (i > 0) {
+                if (i == keyNames.size() - 1) {
+                    builder.append(WHITE).append(" and ");
                 } else {
-                    str.append(AQUA).append(keyName).append(WHITE).append(", ");
+                    builder.append(WHITE).append(", ");
                 }
             }
-            msg[0] = str.toString();
-            if (AFKTapeConfig.get().muteWhenAfk) {
-                msg[1] = (WHITE + "Volume (" + soundManager.getOldVolume() +"%) is " + GRAY + "MUTED" + WHITE);
-            } else {
-                msg[1] = (WHITE + "Volume is " + GREEN + "NOT MUTED" + WHITE);
-            }
-            msg[2] = "";
-            msg[3] = (WHITE + "Press " + RED + "ESCAPE" + WHITE + " to exit");
-            return msg;
+
+            builder.append(AQUA).append(keyNames.get(i));
         }
-        return new String[0];
+
+        msg[0] = builder.toString();
+
+        if (AFKTapeConfig.get().muteWhenAfk) {
+            msg[1] = WHITE + "Volume (" + soundManager.getOldVolume() + "%) is " + GRAY + "MUTED" + WHITE;
+        } else {
+            msg[1] = WHITE + "Volume is " + GREEN + "NOT MUTED" + WHITE;
+        }
+
+        msg[2] = "";
+        msg[3] = WHITE + "Press " + RED + "ESCAPE" + WHITE + " to exit";
+
+        return msg;
     }
 
     public void disable() {
         enabledKeys.forEach(key -> key.setDown(false));
         enabledKeys.clear();
+
         if (AFKTapeConfig.get().muteWhenAfk) {
             soundManager.unmute();
         }
+
         running = false;
-        unpause();
-        wasPaused = false;
-        if (Minecraft.getInstance().screen == null) Minecraft.getInstance().mouseHandler.grabMouse();
+        paused = false;
+
+        if (Minecraft.getInstance().gui.screen() == null) {
+            Minecraft.getInstance().mouseHandler.grabMouse();
+        }
     }
 
     public void pause() {
         paused = true;
-        wasPaused = true;
     }
 
     public void unpause() {

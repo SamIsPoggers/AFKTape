@@ -21,10 +21,6 @@ import java.util.Set;
 
 @Mixin(Minecraft.class)
 public class MinecraftClientMixin {
-
-    @Shadow
-    public Screen screen;
-
     @Shadow
     public LocalPlayer player;
 
@@ -36,6 +32,8 @@ public class MinecraftClientMixin {
 
     @Inject(at = @At("HEAD"), method = "tick()V")
     private void modifyTick(CallbackInfo info) {
+        Minecraft mc = Minecraft.getInstance();
+        Screen screen = mc.gui.screen(); // or mc.gui.getScreen() depending on mappings
         if (KeybindHandler.INSTANCE.isRunningIgnorePause()) {
             if (player == null || !player.isAlive()) {
                 KeybindHandler.INSTANCE.disable();
@@ -57,7 +55,7 @@ public class MinecraftClientMixin {
             } else {
                 if (screen instanceof PauseScreen) {
                     options.pauseOnLostFocus = false;
-                    Minecraft.getInstance().setScreen(null);
+                    Minecraft.getInstance().gui.setScreen(null);
                     Minecraft.getInstance().mouseHandler.grabMouse();
                     System.out.println("Trigger!!!!");
                 }
@@ -78,23 +76,32 @@ public class MinecraftClientMixin {
     @Inject(at = @At("HEAD"), method = "handleKeybinds()V")
     private void modifyHandleInputEvents(CallbackInfo info) {
         if (AFKTapeClient.toggleAfkKey.consumeClick()) {
+            Set<String> seen = new HashSet<>();
             Set<KeyMapping> pressedKeybinds = new HashSet<>();
+
             for (KeyMapping keyMapping : options.keyMappings) {
-                if (!keyMapping.isDown()) continue;
-                if (keyMapping != AFKTapeClient.toggleAfkKey) {
+                if (!keyMapping.isDown() || keyMapping == AFKTapeClient.toggleAfkKey) {
+                    continue;
+                }
+
+                String keyName = keyMapping.getTranslatedKeyMessage().getString();
+
+                if (seen.add(keyName)) {
                     pressedKeybinds.add(keyMapping);
                 }
             }
+
             if (!pressedKeybinds.isEmpty()) {
                 KeybindHandler.INSTANCE.enable(pressedKeybinds);
             }
         }
 
-        if (KeybindHandler.INSTANCE.wasPaused) {
-            KeybindHandler.INSTANCE.enabledKeys.forEach(key -> KeyMapping.click(((KeyBindingAccessor) key).getKey()));
-            KeybindHandler.INSTANCE.wasPaused = false;
-        } else {
-            KeybindHandler.INSTANCE.enabledKeys.forEach(key -> key.setDown(true));
+        if (KeybindHandler.INSTANCE.isRunning()) {
+            for (KeyMapping key : KeybindHandler.INSTANCE.enabledKeys) {
+                if (!key.isDown()) {
+                    key.setDown(true);
+                }
+            }
         }
     }
 }
