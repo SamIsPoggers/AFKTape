@@ -28,10 +28,17 @@ public class MouseMixin {
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "onMove(JDD)V", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "onMove(JDDDD)V", cancellable = true)
     private void modifyOnCursorPos(CallbackInfo info) {
         if (KeybindHandler.INSTANCE.isRunning() && !AFKTapeClient.unlockMouseKey.isDown()) {
             info.cancel();
+        }
+    }
+
+    @Inject(at = @At("TAIL"), method = "grabMouse()V")
+    private void afktape$resetMissTime(CallbackInfo info) {
+        if (KeybindHandler.INSTANCE.isRunning()) {
+            ((MinecraftAccessor) Minecraft.getInstance()).afktape$setMissTime(0);
         }
     }
 }

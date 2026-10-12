@@ -54,10 +54,8 @@ public class MinecraftClientMixin {
                 }
             } else {
                 if (screen instanceof PauseScreen) {
-                    options.pauseOnLostFocus = false;
-                    Minecraft.getInstance().gui.setScreen(null);
-                    Minecraft.getInstance().mouseHandler.grabMouse();
-                    System.out.println("Trigger!!!!");
+                    KeybindHandler.INSTANCE.disable();
+                    return;
                 }
                 if (!KeybindHandler.INSTANCE.isPaused()) {
                     KeybindHandler.INSTANCE.pause();
@@ -67,8 +65,9 @@ public class MinecraftClientMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "pauseGame(Z)V", cancellable = true)
-    private void modifyOpenPauseMenu(CallbackInfo info) {
+    private void modifyOpenPauseMenu(boolean pauseOnly, CallbackInfo info) {
         if (KeybindHandler.INSTANCE.isRunning()) {
+            KeybindHandler.INSTANCE.disable();
             info.cancel();
         }
     }

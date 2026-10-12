@@ -3,7 +3,6 @@ package io.github.samispoggers.mixin;
 import io.github.samispoggers.client.KeybindHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,11 +16,6 @@ public class KeyboardMixin {
     private static final int KEY_ESCAPE = 256;
     @Unique
     private static final int ACTION_PRESS = 1;
-    @Unique
-    private static final long DOUBLE_TAP_WINDOW_MS = 300;
-
-    @Unique
-    private long lastEscapePressTime = 0;
 
     @Inject(at = @At("HEAD"), method = "keyPress", cancellable = true)
     private void modifyKeyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
@@ -30,6 +24,12 @@ public class KeyboardMixin {
         }
 
         int key = event.key();
+
+//        if (key == KEY_ESCAPE && KeybindHandler.INSTANCE.isRunningIgnorePause()) {
+//            KeybindHandler.INSTANCE.disable();
+//            ci.cancel();
+//            return;
+//        }
 
         if (KeybindHandler.INSTANCE.isRunning()) {
             for (KeyMapping keyMapping : KeybindHandler.INSTANCE.enabledKeys) {
@@ -40,35 +40,5 @@ public class KeyboardMixin {
             }
         }
 
-        if (key == KEY_ESCAPE) {
-            handleEscapePress(ci);
-        }
-    }
-
-    @Unique
-    private void handleEscapePress(CallbackInfo ci) {
-        KeybindHandler handler = KeybindHandler.INSTANCE;
-        Minecraft mc = Minecraft.getInstance();
-        boolean hasScreen = mc.gui.screen() != null;
-
-        if (handler.isRunning() && !hasScreen) {
-            handler.disable();
-            ci.cancel();
-            return;
-        }
-
-        if (handler.isRunningIgnorePause()) {
-            if (!hasScreen) {
-                handler.disable();
-                ci.cancel();
-            } else {
-                long currentTime = System.currentTimeMillis();
-                if (currentTime - lastEscapePressTime <= DOUBLE_TAP_WINDOW_MS) {
-                    handler.disable();
-                    ci.cancel();
-                }
-                lastEscapePressTime = currentTime;
-            }
-        }
     }
 }

@@ -21,8 +21,11 @@ sourceSets {
 }
 
 neoForge {
-	version = project.neoforge_version
 	validateAccessTransformers = true
+	enable {
+		version = project.neoforge_version
+		disableRecompilation = true
+	}
 
 	runs {
 		client {
@@ -59,13 +62,13 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	options.release = 25
+	options.release = 26
 }
 
 java {
 	withSourcesJar()
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
+		languageVersion = JavaLanguageVersion.of(26)
 	}
 }
 
@@ -78,7 +81,7 @@ publishing {
 }
 
 def runClientVersions = [
-		'26_2': '26.2.0.25-beta'
+		'26_3': '26.3.0.52-beta'
 ]
 
 runClientVersions.each { suffix, neoVersion ->

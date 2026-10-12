@@ -7,7 +7,7 @@ modId="afktape"
 version="${version}"
 displayName="AFKTape"
 displayURL="https://github.com/SamIsPoggers/AFKTape"
-logoFile="assets/afktape/icon.png"
+iconFile="assets/afktape/icon.png"
 authors="SamIsPoggers"
 description='''A simple mod that allows you to hold down keys while AFK.'''
 

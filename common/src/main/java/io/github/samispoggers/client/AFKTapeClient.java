@@ -4,7 +4,6 @@ import io.github.samispoggers.AFKTape;
 import io.github.samispoggers.config.AFKTapeConfig;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public final class AFKTapeClient {
     public static KeyMapping toggleAfkKey;
@@ -22,7 +21,7 @@ public final class AFKTapeClient {
 
         return new KeyMapping(
                 "key.afktape.toggle",
-                GLFW.GLFW_KEY_K,
+                75,
                 category
         );
     }
@@ -32,7 +31,7 @@ public final class AFKTapeClient {
 
         return new KeyMapping(
                 "key.afktape.mouse",
-                GLFW.GLFW_KEY_LEFT_ALT,
+                342,
                 category
         );
     }

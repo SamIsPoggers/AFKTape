@@ -1,12 +1,12 @@
 # AFKTape
 
-Client-side Fabric and NeoForge mod for Minecraft 26.2.
+Client-side Fabric and NeoForge mod for Minecraft 26.3.
 
 ## Supported Versions
 
-The published jar is built against Minecraft 26.2 and declares support for:
+The published jar is built against Minecraft 26.3 and declares support for:
 
-- Minecraft 26.2
+- Minecraft 26.3
 
 ## Build
 
@@ -23,11 +23,11 @@ build/libs/afktape-1.0.0.jar
 ## Run Clients
 
 ```powershell
-.\gradlew.bat runClient26_2
+.\gradlew.bat runClient26_3
 ```
 
 ## Requirements
 
 - Gradle is provided by the wrapper.
 - The Gradle JVM must be Java 21 or newer.
-- Compilation uses a Java 25 toolchain.
+- Compilation uses a Java 26 toolchain.
