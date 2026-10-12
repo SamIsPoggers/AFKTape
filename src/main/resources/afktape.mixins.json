@@ -8,6 +8,7 @@
   "client": [
     "AFKDisplayMixin",
     "KeyBindingAccessor",
+    "KeyBindingMixin",
     "MinecraftAccessor",
     "MinecraftTickMixin"
   ],

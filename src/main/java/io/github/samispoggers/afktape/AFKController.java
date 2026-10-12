@@ -135,4 +135,16 @@ public final class AFKController {
 		((MinecraftAccessor) mc).afktape$setFocused(true);
 		mc.mouse.lock();
 	}
+
+	public boolean isKeyTaped(int keyCode) {
+		if (!afkMode) {
+			return false;
+		}
+		for (KeyBinding binding : heldKeys) {
+			if (binding.getKeyCode() == keyCode) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
