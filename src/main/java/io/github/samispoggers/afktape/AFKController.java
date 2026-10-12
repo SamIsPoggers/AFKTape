@@ -1,12 +1,12 @@
 package io.github.samispoggers.afktape;
 
+import io.github.samispoggers.afktape.mixin.KeyBindingAccessor;
 import io.github.samispoggers.afktape.mixin.MinecraftAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.options.KeyBinding;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,15 +48,8 @@ public final class AFKController {
 		return name == null ? "?" : name;
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<KeyBinding> getAllBindings() {
-		try {
-			Field field = KeyBinding.class.getDeclaredField("ALL");
-			field.setAccessible(true);
-			return (List<KeyBinding>) field.get(null);
-		} catch (ReflectiveOperationException e) {
-			throw new IllegalStateException("Could not read registered keybindings", e);
-		}
+		return KeyBindingAccessor.afktape$getAll();
 	}
 
 	public void toggleAFK() {

@@ -8,7 +8,7 @@
     "Sam"
   ],
   "contact": {
-    "sources": "https://github.com/your-username/afktape"
+    "sources": "https://github.com/samispoggers/afktape"
   },
   "license": "CC0-1.0",
   "environment": "client",
@@ -21,8 +21,9 @@
     "afktape.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.17.3",
+    "fabricloader": ">=0.19.5",
     "minecraft": "1.8.9",
-    "osl-entrypoints": ">=0.4.0"
+    "osl-entrypoints": ">=0.4.0",
+    "osl-keybinds": "*"
   }
 }
