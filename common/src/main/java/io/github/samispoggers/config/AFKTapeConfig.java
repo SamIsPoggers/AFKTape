@@ -28,7 +28,7 @@ public class AFKTapeConfig {
     @SerialEntry
     public boolean kickOnTotemPopWhenAfk = false;
     @SerialEntry
-    public boolean unlockMouseByDefault = false;
+    public boolean unlockMouseByDefault = true;
 
     public static AFKTapeConfig get() {
         return HANDLER.instance();
@@ -85,7 +85,7 @@ public class AFKTapeConfig {
                                         .name(Component.literal("Unlock Mouse By Default"))
                                         .description(OptionDescription.of(Component.literal("Unlocks the mouse by default while AFKTaped; holding the Unlock Mouse key will lock it instead")))
                                         .binding(
-                                                false,
+                                                true,
                                                 () -> get().unlockMouseByDefault,
                                                 newVal -> get().unlockMouseByDefault = newVal
                                         )
