@@ -1,8 +1,14 @@
 # Gradle
 .gradle/
+.codex-gradle/
 build/
 out/
 classes/
+
+# Logs & crashes
+*.log
+hs_err_pid*
+replay_pid*
 
 # Quilt Loom
 remappedSrc/

@@ -1,7 +1,7 @@
 plugins {
 	id 'maven-publish'
-	id 'fabric-loom' version '1.18-SNAPSHOT'
-	id 'ploceus' version '1.18-SNAPSHOT'
+	id 'fabric-loom' version '1.19-SNAPSHOT'
+	id 'ploceus' version '1.19-SNAPSHOT'
 }
 
 base {
@@ -14,6 +14,25 @@ group = project.maven_group
 repositories {
 	// Loom provides the repositories needed for Minecraft and its libraries.
 	// Add additional repositories only when a dependency requires them.
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = 'Modrinth'
+				url = 'https://api.modrinth.com/maven'
+			}
+		}
+		filter {
+			includeGroup 'maven.modrinth'
+		}
+	}
+	maven {
+		name = 'Polyfrost'
+		url = 'https://repo.polyfrost.org/releases'
+	}
+	maven {
+		name = 'Hypixel'
+		url = 'https://repo.hypixel.net/repository/Hypixel/'
+	}
 }
 
 dependencies {
@@ -23,6 +42,21 @@ dependencies {
 	mappings ploceus.featherMappings(project.feather_build)
 
 	ploceus.dependOsl(project.osl_version)
+
+	modCompileOnly "maven.modrinth:modmenu-ornithe:${project.modmenu_version}"
+	compileOnly("org.polyfrost.oneconfig:config:${project.oneconfig_api_version}") {
+		transitive = false
+	}
+	compileOnly("org.polyfrost.oneconfig:config-impl:${project.oneconfig_api_version}") {
+		transitive = false
+	}
+	runtimeOnly "net.hypixel:mod-api:1.0.2"
+}
+
+configurations.named('compileClasspath') {
+	attributes {
+		attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 21)
+	}
 }
 
 processResources {
