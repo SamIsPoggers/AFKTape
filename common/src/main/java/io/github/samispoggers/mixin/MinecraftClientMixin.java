@@ -9,6 +9,7 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,6 +31,9 @@ public class MinecraftClientMixin {
     @Shadow @Final
     public MouseHandler mouseHandler;
 
+    @Shadow
+    private long lastActiveTime;
+
     @Inject(at = @At("HEAD"), method = "tick()V")
     private void modifyTick(CallbackInfo info) {
         Minecraft mc = Minecraft.getInstance();
@@ -39,10 +43,10 @@ public class MinecraftClientMixin {
                 KeybindHandler.INSTANCE.disable();
             }
             if (screen == null) {
-                if (AFKTapeClient.unlockMouseKey.isDown()) {
-                    mouseHandler.grabMouse();
-                } else {
+                if (KeybindHandler.shouldUnlockMouse()) {
                     mouseHandler.releaseMouse();
+                } else {
+                    mouseHandler.grabMouse();
                 }
             }
         }
@@ -61,6 +65,14 @@ public class MinecraftClientMixin {
                     KeybindHandler.INSTANCE.pause();
                 }
             }
+        }
+    }
+
+    @Inject(at = @At("HEAD"), method = "pauseIfInactive()V", cancellable = true)
+    private void preventPauseOnLostFocus(CallbackInfo info) {
+        if (KeybindHandler.INSTANCE.isRunningIgnorePause()) {
+            this.lastActiveTime = Util.getMillis();
+            info.cancel();
         }
     }
 

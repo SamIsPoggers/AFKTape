@@ -42,7 +42,14 @@ public class KeybindHandler {
             soundManager.mute();
         }
 
-        Minecraft.getInstance().mouseHandler.releaseMouse();
+        if (shouldUnlockMouse()) {
+            Minecraft.getInstance().mouseHandler.releaseMouse();
+        }
+    }
+
+    public static boolean shouldUnlockMouse() {
+        boolean keyDown = AFKTapeClient.unlockMouseKey.isDown();
+        return AFKTapeConfig.get().unlockMouseByDefault ? !keyDown : keyDown;
     }
 
     public String[] getMessage() {
@@ -98,6 +105,7 @@ public class KeybindHandler {
         paused = false;
 
         if (Minecraft.getInstance().gui.screen() == null) {
+            KeyMapping.setAll();
             Minecraft.getInstance().mouseHandler.grabMouse();
         }
     }

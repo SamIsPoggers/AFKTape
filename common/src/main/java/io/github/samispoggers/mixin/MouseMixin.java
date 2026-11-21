@@ -1,6 +1,5 @@
 package io.github.samispoggers.mixin;
 
-import io.github.samispoggers.client.AFKTapeClient;
 import io.github.samispoggers.client.KeybindHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -23,14 +22,14 @@ public class MouseMixin {
 
     @Inject(at = @At("HEAD"), method = "grabMouse()V", cancellable = true)
     private void modifyLockCursor(CallbackInfo info) {
-        if (KeybindHandler.INSTANCE.isRunning() && !AFKTapeClient.unlockMouseKey.isDown()) {
+        if (KeybindHandler.INSTANCE.isRunning() && KeybindHandler.shouldUnlockMouse()) {
             info.cancel();
         }
     }
 
     @Inject(at = @At("HEAD"), method = "onMove(JDDDD)V", cancellable = true)
     private void modifyOnCursorPos(CallbackInfo info) {
-        if (KeybindHandler.INSTANCE.isRunning() && !AFKTapeClient.unlockMouseKey.isDown()) {
+        if (KeybindHandler.INSTANCE.isRunning() && KeybindHandler.shouldUnlockMouse()) {
             info.cancel();
         }
     }

@@ -27,6 +27,8 @@ public class AFKTapeConfig {
     public boolean kickOnDamageWhenAfk = false;
     @SerialEntry
     public boolean kickOnTotemPopWhenAfk = false;
+    @SerialEntry
+    public boolean unlockMouseByDefault = false;
 
     public static AFKTapeConfig get() {
         return HANDLER.instance();
@@ -76,6 +78,16 @@ public class AFKTapeConfig {
                                                 false,
                                                 () -> get().kickOnTotemPopWhenAfk,
                                                 newVal -> get().kickOnTotemPopWhenAfk = newVal
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Component.literal("Unlock Mouse By Default"))
+                                        .description(OptionDescription.of(Component.literal("Unlocks the mouse by default while AFKTaped; holding the Unlock Mouse key will lock it instead")))
+                                        .binding(
+                                                false,
+                                                () -> get().unlockMouseByDefault,
+                                                newVal -> get().unlockMouseByDefault = newVal
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
