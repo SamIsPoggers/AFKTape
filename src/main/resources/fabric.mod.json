@@ -11,10 +11,14 @@
     "sources": "https://github.com/samispoggers/afktape"
   },
   "license": "CC0-1.0",
+  "icon": "assets/afktape/icon.png",
   "environment": "client",
   "entrypoints": {
     "client-init": [
       "io.github.samispoggers.afktape.AFKTape"
+    ],
+    "modmenu": [
+      "io.github.samispoggers.afktape.compat.ModMenuIntegration"
     ]
   },
   "mixins": [

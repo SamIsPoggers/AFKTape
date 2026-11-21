@@ -7,6 +7,8 @@
   ],
   "client": [
     "AFKDisplayMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "GameRendererMixin",
     "KeyBindingAccessor",
     "KeyBindingMixin",
     "MinecraftAccessor",

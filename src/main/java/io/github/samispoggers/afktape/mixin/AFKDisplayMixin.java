@@ -3,6 +3,7 @@ package io.github.samispoggers.afktape.mixin;
 
 import io.github.samispoggers.afktape.AFKController;
 import io.github.samispoggers.afktape.AFKTape;
+import io.github.samispoggers.afktape.config.AFKTapeConfig;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.Window;
@@ -39,9 +40,13 @@ public abstract class AFKDisplayMixin {
 			: "K";
 
 		String line1 = "§fTaped down §b" + keys;
-		String line2 = "§fPress §cESCAPE §for §c" + toggleName + " §fto exit.";
+		String line2 = AFKTapeConfig.isMuteWhenAfk()
+			? "§fVolume (" + AFKTape.afkController.getSoundManager().getOldVolume() + "%) is §7MUTED"
+			: "§fVolume is §aNOT MUTED";
+		String line3 = "§fPress §cESCAPE §for §c" + toggleName + " §fto exit.";
 
-		int y = centerY - 15;
+		int lineHeight = text.fontHeight + 4;
+		int y = centerY - 22;
 
 		text.drawWithShadow(
 			line1,
@@ -53,7 +58,14 @@ public abstract class AFKDisplayMixin {
 		text.drawWithShadow(
 			line2,
 			centerX - text.getWidth(line2) / 2.0F,
-			(float) (y + text.fontHeight + 4),
+			(float) (y + lineHeight),
+			0xFFFFFF
+		);
+
+		text.drawWithShadow(
+			line3,
+			centerX - text.getWidth(line3) / 2.0F,
+			(float) (y + lineHeight * 2 + 4),
 			0xFFFFFF
 		);
 	}

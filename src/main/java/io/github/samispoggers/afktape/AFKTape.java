@@ -1,6 +1,9 @@
 
 package io.github.samispoggers.afktape;
 
+import io.github.samispoggers.afktape.compat.OneConfigIntegration;
+import io.github.samispoggers.afktape.config.AFKTapeConfig;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.options.KeyBinding;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 import net.ornithemc.osl.keybinds.api.KeybindEvents;
@@ -15,6 +18,11 @@ public final class AFKTape implements ClientModInitializer {
 
 	@Override
 	public void initClient() {
+		AFKTapeConfig.load();
+		if (FabricLoader.getInstance().isModLoaded("oneconfig")) {
+			OneConfigIntegration.init();
+		}
+
 		KeybindEvents.REGISTER_KEYBINDS.register(AFKTape::registerKeybinds);
 
 		afkController = new AFKController();

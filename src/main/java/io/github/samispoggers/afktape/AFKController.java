@@ -1,5 +1,6 @@
 package io.github.samispoggers.afktape;
 
+import io.github.samispoggers.afktape.config.AFKTapeConfig;
 import io.github.samispoggers.afktape.mixin.KeyBindingAccessor;
 import io.github.samispoggers.afktape.mixin.MinecraftAccessor;
 import net.minecraft.client.Minecraft;
@@ -14,12 +15,17 @@ import java.util.List;
 import java.util.Set;
 
 public final class AFKController {
+	private final SoundManager soundManager = new SoundManager();
 	private boolean afkMode;
 
 	private final Set<KeyBinding> heldKeys = new HashSet<>();
 
 	public boolean isAfkEnabled() {
 		return afkMode;
+	}
+
+	public SoundManager getSoundManager() {
+		return soundManager;
 	}
 
 	public Set<KeyBinding> getHeldKeys() {
@@ -75,7 +81,17 @@ public final class AFKController {
 		heldKeys.remove(AFKTape.unlockMouseKey);
 
 		afkMode = true;
-		releaseMouse();
+		if (AFKTapeConfig.isMuteWhenAfk()) {
+			soundManager.mute();
+		}
+		if (shouldUnlockMouse()) {
+			releaseMouse();
+		}
+	}
+
+	public static boolean shouldUnlockMouse() {
+		boolean keyDown = AFKTape.unlockMouseKey != null && isBindingDown(AFKTape.unlockMouseKey);
+		return AFKTapeConfig.isUnlockMouseByDefault() ? !keyDown : keyDown;
 	}
 
 	public void tickAFK() {
@@ -87,13 +103,13 @@ public final class AFKController {
 			KeyBinding.set(binding.getKeyCode(), true);
 		}
 
-		boolean wantGrab = AFKTape.unlockMouseKey != null
-			&& isBindingDown(AFKTape.unlockMouseKey);
-
-		if (wantGrab && !Mouse.isGrabbed()) {
-			grabMouse();
-		} else if (!wantGrab && Mouse.isGrabbed()) {
-			releaseMouse();
+		if (Minecraft.getInstance().screen == null) {
+			boolean wantUnlock = shouldUnlockMouse();
+			if (wantUnlock && Mouse.isGrabbed()) {
+				releaseMouse();
+			} else if (!wantUnlock && !Mouse.isGrabbed()) {
+				grabMouse();
+			}
 		}
 	}
 
@@ -112,8 +128,13 @@ public final class AFKController {
 
 		afkMode = false;
 
+		if (AFKTapeConfig.isMuteWhenAfk()) {
+			soundManager.unmute();
+		}
+
+		boolean inGame = Minecraft.getInstance().screen == null;
 		for (KeyBinding binding : heldKeys) {
-			KeyBinding.set(binding.getKeyCode(), false);
+			KeyBinding.set(binding.getKeyCode(), inGame && isBindingDown(binding));
 		}
 
 		heldKeys.clear();
